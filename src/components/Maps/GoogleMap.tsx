@@ -106,7 +106,6 @@ const GoogleMap = () => {
       deliveryContext.delivery?.status !== 'delivered' &&
       deliveryContext.delivery?.status !== 'failed'
     ) {
-
       fetchCurrentPositionIntervalId.current = window.setInterval(() => {
         if ('geolocation' in navigator) {
           navigator.geolocation.getCurrentPosition((position) => {
@@ -166,7 +165,101 @@ const GoogleMap = () => {
       <h4 className="mb-2 text-xl font-semibold text-black dark:text-white">
         MAP
       </h4>
-      <div className="my-8 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
+      <div className="grid grid-cols-12 gap-4">
+        <div className="col-span-10">
+          {currentPosition && (
+            <APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
+              <div className="h-90">
+                <Map
+                  defaultZoom={12}
+                  center={currentPosition}
+                  mapId={import.meta.env.VITE_GOOGLE_MAPS_MAP_ID}
+                >
+                  {/* Current Location Marker */}
+                  <AdvancedMarker position={currentPosition}>
+                    <Pin
+                      background="#ffa70b"
+                      glyphColor="#ffffff"
+                      borderColor="#ffa70b"
+                      glyph="C"
+                    />
+                  </AdvancedMarker>
+
+                  {/* From Location Marker */}
+                  {packageContext.pack?.from_location?.lat &&
+                    packageContext.pack?.from_location?.lng && (
+                      <AdvancedMarker
+                        position={{
+                          lat: packageContext.pack?.from_location?.lat,
+                          lng: packageContext.pack?.from_location?.lng,
+                        }}
+                      >
+                        <Pin
+                          background="#3c50e0"
+                          glyphColor="#ffffff"
+                          borderColor="#3c50e0"
+                          glyph="S"
+                        />
+                      </AdvancedMarker>
+                    )}
+
+                  {/* To Location Marker */}
+                  {packageContext.pack?.to_location?.lat &&
+                    packageContext.pack?.to_location?.lng && (
+                      <AdvancedMarker
+                        position={{
+                          lat: packageContext.pack?.to_location?.lat,
+                          lng: packageContext.pack?.to_location?.lng,
+                        }}
+                      >
+                        <Pin
+                          background="#219653"
+                          glyphColor="#ffffff"
+                          borderColor="#219653"
+                          glyph="D"
+                        />
+                      </AdvancedMarker>
+                    )}
+                </Map>
+              </div>
+            </APIProvider>
+          )}
+        </div>
+        <div className="col-span-2 flex justify-center">
+          <div className="flex flex-col justify-between">
+            <button
+              onClick={onPickedUp}
+              disabled={deliveryContext.delivery?.status !== 'open'}
+              className="text-center  rounded-md border py-2 px-4.5 font-medium text-white hover:bg-opacity-90 bg-secondary  border-secondary"
+            >
+              Picked Up
+            </button>
+            <button
+              onClick={onInTransit}
+              disabled={deliveryContext.delivery?.status !== 'picked-up'}
+              className=" rounded-md border py-2 px-4.5 font-medium text-white  hover:bg-opacity-90 bg-warning border-warning"
+            >
+              In-Transit
+            </button>
+            <button
+              onClick={onDelivered}
+              disabled={deliveryContext.delivery?.status !== 'in-transit'}
+              className=" rounded-md border py-2 px-4.5 font-medium text-white  hover:bg-opacity-90 bg-success border-success"
+            >
+              Delivered
+            </button>
+            <button
+              onClick={onFailed}
+              disabled={deliveryContext.delivery?.status !== 'in-transit'}
+              className=" rounded-md border py-2 px-4.5 font-medium text-white  hover:bg-opacity-90 bg-danger border-danger"
+            >
+              Failed
+            </button>
+          </div>
+        </div>
+      </div>
+      <div className="mb-5.5 flex flex-wrap items-center gap-3.5"></div>
+      {/* <div className="my-8 grid grid-cols-12 gap-4 md:mt-6 md:gap-6 2xl:mt-7.5 2xl:gap-7.5">
         <button
           onClick={onPickedUp}
           disabled={deliveryContext.delivery?.status !== 'open'}
@@ -195,65 +288,7 @@ const GoogleMap = () => {
         >
           Failed
         </button>
-      </div>
-
-      {currentPosition && (
-        <APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
-          <div className="h-90">
-            <Map
-              defaultZoom={12}
-              center={currentPosition}
-              mapId={import.meta.env.VITE_GOOGLE_MAPS_MAP_ID}
-            >
-              {/* Current Location Marker */}
-              <AdvancedMarker position={currentPosition}>
-                <Pin
-                  background="#ffa70b"
-                  glyphColor="#ffffff"
-                  borderColor="#ffa70b"
-                  glyph="C"
-                />
-              </AdvancedMarker>
-
-              {/* From Location Marker */}
-              {packageContext.pack?.from_location?.lat &&
-                packageContext.pack?.from_location?.lng && (
-                  <AdvancedMarker
-                    position={{
-                      lat: packageContext.pack?.from_location?.lat,
-                      lng: packageContext.pack?.from_location?.lng,
-                    }}
-                  >
-                    <Pin
-                      background="#3c50e0"
-                      glyphColor="#ffffff"
-                      borderColor="#3c50e0"
-                      glyph="S"
-                    />
-                  </AdvancedMarker>
-                )}
-
-              {/* To Location Marker */}
-              {packageContext.pack?.to_location?.lat &&
-                packageContext.pack?.to_location?.lng && (
-                  <AdvancedMarker
-                    position={{
-                      lat: packageContext.pack?.to_location?.lat,
-                      lng: packageContext.pack?.to_location?.lng,
-                    }}
-                  >
-                    <Pin
-                      background="#219653"
-                      glyphColor="#ffffff"
-                      borderColor="#219653"
-                      glyph="D"
-                    />
-                  </AdvancedMarker>
-                )}
-            </Map>
-          </div>
-        </APIProvider>
-      )}
+      </div> */}
     </div>
   );
 };
